@@ -1,0 +1,8 @@
+<body>
+   {% if filenam %}
+       {% for p in filenam %}
+           <p>{{ p }}</p>
+              <img src= "{{ p }}" width="160" height="100"><br><br>
+      {% endfor %}
+   {% endif %}
+</body>

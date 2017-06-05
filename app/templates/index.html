@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block body %}
+  <div class="container" id="sumery-container">
+    <div class="row">
+      <div class="col-md-8">
+        <h3>{{ classify }}</h3>
+        {% for post in posts %}
+          <hr>
+          <div class="post_head"><h3>{{ post.title | safe }}</h3></div>
+          <div class="media" margin="30px">
+            <a class="media-left" >
+              <img src="{{ post.head_pic }}" width="200" height="150" alt="...">
+            </a>
+            <div class="media-body">
+              {{ post.abstract }}<br><br>
+            </div>
+          </div>
+          <div class="media-foot">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <p>发布时间：{{ post.timestamp.strftime("%Y-%m-%d") }} &nbsp
+                  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp分类：{{ post.tag |  tag_get }}</p>
+                {% if current_user.is_authenticated %}
+                  <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      管理
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                      <li><a href="{{ url_for('.edit_post', id=post.id) }}">编辑</a></li>
+                      <li><a href="{{ url_for('.post_pic', id=post.id) }}">图片上传</a></li>
+                      <li><a href="{{ url_for('.uploaded_file', id=post.id) }}">主题图片</a></li>
+                      <li><a href="{{ url_for('.post', id=post.id) }}">查看更多</a></li>
+                      <li role="separator" class="divider"></li>
+                      <li><a href="" data-toggle="modal" data-target="#myModal">删除</a></li>
+                    </ul>
+                  </div>
+                {% else %}
+                  <a class="btn btn-default" href="{{ url_for('.post', id=post.id) }}">查看更多</a>
+                {% endif %}
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">删除文章</h4>
+                      </div>
+                      <div class="modal-body">确定删除？</div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                        <a class="btn btn-primary" href="{{ url_for('.delete_post',id=post.id) }}" role="button">删除</a>
+                      </div>
+                    </div><!-- /.modal-content -->
+                  </div><!-- /.modal -->
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        {% if pagination %}
+          <div class="pagination">
+            {{ macros.pagination_widget(pagination, '.index') }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="col-md-4">
+        <h3>个人资料</h3>
+        <div class="right-index">
+          <hr>
+          <img src="{{ url_for('static', filename='test.jpg') }}" width="80" height="80"><br><br>
+          <p>邮箱：psheng@outlook.com</p>
+          <p>QQ：674799317</p>
+        </div>
+        <div class="newly-post">
+          <h3>最新文章</h3><hr>
+          {% for new_post in new_posts %}
+            <p><a href="{{ url_for('.post', id=new_post.id) }}">{{ new_post.title }}</a></p>
+          {% endfor %}
+        </div>
+        <div class="other-link">
+          <h3>链接</h3><hr>
+          <p><a href="http://github.com/pshenglh" target="_blank">Github</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+{% endblock %}
+
+
+

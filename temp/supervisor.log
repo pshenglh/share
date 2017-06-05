@@ -1,0 +1,84 @@
+[2016-11-26 13:19:24 +0000] [4762] [INFO] Starting gunicorn 19.6.0
+[2016-11-26 13:19:24 +0000] [4762] [INFO] Listening at: http://127.0.0.1:8000 (4762)
+[2016-11-26 13:19:24 +0000] [4762] [INFO] Using worker: sync
+[2016-11-26 13:19:24 +0000] [4767] [INFO] Booting worker with pid: 4767
+[2016-11-26 13:19:24 +0000] [4768] [INFO] Booting worker with pid: 4768
+[2016-11-26 13:19:24 +0000] [4771] [INFO] Booting worker with pid: 4771
+[2016-11-26 13:19:24 +0000] [4774] [INFO] Booting worker with pid: 4774
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+[2016-11-26 13:26:15 +0000] [4762] [INFO] Handling signal: term
+[2016-11-26 13:26:15 +0000] [4768] [INFO] Worker exiting (pid: 4768)
+[2016-11-26 13:26:15 +0000] [4771] [INFO] Worker exiting (pid: 4771)
+[2016-11-26 13:26:15 +0000] [4774] [INFO] Worker exiting (pid: 4774)
+[2016-11-26 13:26:15 +0000] [4767] [INFO] Worker exiting (pid: 4767)
+[2016-11-26 13:26:16 +0000] [4762] [INFO] Shutting down: Master
+[2016-11-26 13:26:58 +0000] [5081] [INFO] Starting gunicorn 19.6.0
+[2016-11-26 13:26:58 +0000] [5081] [INFO] Listening at: http://127.0.0.1:8000 (5081)
+[2016-11-26 13:26:58 +0000] [5081] [INFO] Using worker: sync
+[2016-11-26 13:26:58 +0000] [5086] [INFO] Booting worker with pid: 5086
+[2016-11-26 13:26:58 +0000] [5087] [INFO] Booting worker with pid: 5087
+[2016-11-26 13:26:58 +0000] [5092] [INFO] Booting worker with pid: 5092
+[2016-11-26 13:26:58 +0000] [5093] [INFO] Booting worker with pid: 5093
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+[2016-11-26 13:35:00 +0000] [5081] [INFO] Handling signal: term
+[2016-11-26 13:35:00 +0000] [5092] [INFO] Worker exiting (pid: 5092)
+[2016-11-26 13:35:00 +0000] [5086] [INFO] Worker exiting (pid: 5086)
+[2016-11-26 13:35:00 +0000] [5093] [INFO] Worker exiting (pid: 5093)
+[2016-11-26 13:35:00 +0000] [5087] [INFO] Worker exiting (pid: 5087)
+[2016-11-26 13:35:00 +0000] [5081] [INFO] Shutting down: Master
+[2016-11-26 13:52:21 +0000] [5738] [INFO] Starting gunicorn 19.6.0
+[2016-11-26 13:52:21 +0000] [5738] [INFO] Listening at: http://127.0.0.1:8000 (5738)
+[2016-11-26 13:52:21 +0000] [5738] [INFO] Using worker: sync
+[2016-11-26 13:52:21 +0000] [5743] [INFO] Booting worker with pid: 5743
+[2016-11-26 13:52:21 +0000] [5744] [INFO] Booting worker with pid: 5744
+[2016-11-26 13:52:21 +0000] [5749] [INFO] Booting worker with pid: 5749
+[2016-11-26 13:52:22 +0000] [5750] [INFO] Booting worker with pid: 5750
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+[2016-11-26 13:52:40 +0000] [5738] [INFO] Handling signal: term
+[2016-11-26 13:52:40 +0000] [5743] [INFO] Worker exiting (pid: 5743)
+[2016-11-26 13:52:40 +0000] [5750] [INFO] Worker exiting (pid: 5750)
+[2016-11-26 13:52:40 +0000] [5744] [INFO] Worker exiting (pid: 5744)
+[2016-11-26 13:52:40 +0000] [5749] [INFO] Worker exiting (pid: 5749)
+[2016-11-26 13:52:40 +0000] [5738] [INFO] Shutting down: Master
+[2016-11-26 17:11:36 +0000] [11605] [INFO] Starting gunicorn 19.6.0
+[2016-11-26 17:11:36 +0000] [11605] [INFO] Listening at: http://127.0.0.1:8000 (11605)
+[2016-11-26 17:11:36 +0000] [11605] [INFO] Using worker: sync
+[2016-11-26 17:11:36 +0000] [11610] [INFO] Booting worker with pid: 11610
+[2016-11-26 17:11:36 +0000] [11611] [INFO] Booting worker with pid: 11611
+[2016-11-26 17:11:36 +0000] [11612] [INFO] Booting worker with pid: 11612
+[2016-11-26 17:11:36 +0000] [11613] [INFO] Booting worker with pid: 11613
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+/home/pan/PycharmProjects/myblog/venv/local/lib/python2.7/site-packages/flask_sqlalchemy/__init__.py:800: UserWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.
+  warnings.warn('SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True to suppress this warning.')
+[2016-11-26 17:12:09 +0000] [11605] [INFO] Handling signal: term
+[2016-11-26 17:12:09 +0000] [11612] [INFO] Worker exiting (pid: 11612)
+[2016-11-26 17:12:09 +0000] [11610] [INFO] Worker exiting (pid: 11610)
+[2016-11-26 17:12:09 +0000] [11613] [INFO] Worker exiting (pid: 11613)
+[2016-11-26 17:12:09 +0000] [11611] [INFO] Worker exiting (pid: 11611)
+[2016-11-26 17:12:09 +0000] [11605] [INFO] Shutting down: Master

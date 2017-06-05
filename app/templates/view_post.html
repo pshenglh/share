@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+  <div class="container">
+    <div class="post">
+      <!-- 文章标题 -->
+      <h2 align="center">{{ post.title }}</h2>
+      <hr>
+      <!-- 文章内容 -->
+      <p>{{ post.body | safe }}</p>
+      {% if current_user.is_authenticated %}
+        <div class="right-btn">
+          <a class="btn btn-primary" data-toggle="modal" data-target="#myModal">删除</a>
+          <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}">编辑</a>
+        </div>
+      {% endif %}
+      <!-- 评论部分 -->
+      <h4>评论</h4>
+      <hr>
+      {% for comment in comments %}
+        <p>{{ comment.body | safe }}</p>
+        <br>
+        {% if current_user.is_authenticated %}
+          <p>联系方式：{{ comment.connection }}</p>
+          <div class="right-btn">
+            <p><a class="btn btn-primary btn-large" href="{{ url_for('.delete_comment', id=comment.id) }}">删除</a></p>
+          </div>
+        {% endif %}
+        <hr>
+      {% endfor %}
+      {{ wtf.quick_form(form) }}
+    </div>
+  </div>
+   <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+     <div class="modal-dialog">
+       <div class="modal-content">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+           <h4 class="modal-title" id="myModalLabel">删除文章</h4>
+         </div>
+         <div class="modal-body">确定删除？</div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+           <a class="btn btn-primary" href="{{ url_for('.delete_post',id=post.id) }}" role="button">删除</a>
+         </div>
+       </div><!-- /.modal-content -->
+     </div><!-- /.modal -->
+   </div>
+{% endblock %}

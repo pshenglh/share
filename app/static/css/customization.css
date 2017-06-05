@@ -1,0 +1,129 @@
+body {
+  padding-top: 70px;
+}
+
+.post_head h3{
+    adding: 8px;
+    margin-bottom: 0px;
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.container {
+    padding-right: 90px;
+    padding-left: 90px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+form.control{
+    padding-bottom: 12px;
+}
+.tag{
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.alert{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 20px;
+    border-radius: 0px;
+}
+
+.dropdown {
+  float: right;
+  z-index: 5;
+}
+
+.media-foot .panel {
+  margin-top: 10px;
+}
+
+.media-foot .panel-body {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.media-foot .panel-body p {
+  position: relative;
+  top: 7px;
+  float: left;
+}
+
+.media-foot .btn {
+    float: right;
+}
+
+.alert-success {
+    color: darkslategray;
+    background-color: lightgrey;
+    border-color: lightgrey;
+}
+.right-index{
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.right-btn{
+  float: right;
+}
+
+.post {
+    max-width: 700px;
+    margin-left: 150px;
+}
+.about_me{
+    padding-left: 200px;
+    padding-right: 200px;
+}
+.pagination{
+    position: relative;
+    left: 120px;
+}
+
+.foot {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 17px;
+    font-family: Times;
+}
+
+
+.other-link{
+  margin-top: 20px;
+}
+
+.newly-post {
+  margin-bottom: 100px;
+}
+
+.newly-post p {
+   margin-bottom: 0px;
+}
+
+.login-form {
+  margin-top: 120px;
+  margin-left: 300px;
+  margin-bottom: 160px;
+  max-width: 330px
+}
+.login-form .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.login-form .btn{
+  margin-top: 20px;
+}
+
+#myModal div a {
+  margin-right: 10px;
+}
+
+#myModal div

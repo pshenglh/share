@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include '_post.html' %}
+            {% include '_body_pic.html' %}
+        </div>
+    </div>
+{% endblock %}

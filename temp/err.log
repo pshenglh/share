@@ -1,0 +1,76 @@
+supervisor: couldn't exec /var/www/myblog/venv/bin/gunicorn: ENOENT
+supervisor: child process was not spawned
+supervisor: couldn't exec /var/www/myblog/venv/bin/gunicorn: ENOENT
+supervisor: child process was not spawned
+supervisor: couldn't exec /var/www/myblog/venv/bin/gunicorn: ENOENT
+supervisor: child process was not spawned
+supervisor: couldn't exec /var/www/myblog/venv/bin/gunicorn: ENOENT
+supervisor: child process was not spawned
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+sh: 0: Can't open /var/www/myblog/venv/bin/gunicorn
+sh: 0: Can't open /var/www/myblog/venv/bin/gunicorn
+sh: 0: Can't open /var/www/myblog/venv/bin/gunicorn
+sh: 0: Can't open /var/www/myblog/venv/bin/gunicorn
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
+/var/www/myblog/venv/bin/gunicorn: 4: /var/www/myblog/venv/bin/gunicorn: import: not found
+/var/www/myblog/venv/bin/gunicorn: 5: /var/www/myblog/venv/bin/gunicorn: import: not found
+from: can't read /var/mail/gunicorn.app.wsgiapp
+/var/www/myblog/venv/bin/gunicorn: 10: /var/www/myblog/venv/bin/gunicorn: Syntax error: "(" unexpected (expecting "then")
