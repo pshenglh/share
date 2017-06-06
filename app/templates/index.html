@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% import "_macros.html" as macros %}
 
 {% block body %}
   <div class="container" id="sumery-container">
@@ -60,11 +59,6 @@
             </div>
           </div>
         {% endfor %}
-        {% if pagination %}
-          <div class="pagination">
-            {{ macros.pagination_widget(pagination, '.index') }}
-          </div>
-        {% endif %}
       </div>
       <div class="col-md-4">
         <h3>个人资料</h3>

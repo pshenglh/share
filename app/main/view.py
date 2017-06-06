@@ -4,7 +4,7 @@ from flask import render_template, redirect, url_for, request, current_app, make
 import os
 from flask_login import login_user, login_required, logout_user
 from werkzeug import secure_filename
-from ..models import Admin, Post, Comment
+from ..models import Users, Posts
 from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm
 from .. import db, login_manager
 from . import main
@@ -14,14 +14,14 @@ from wtforms.compat import iteritems
 #flask_login回调函数
 @login_manager.user_loader
 def load_user(user_id):
-    return Admin.query.get(int(user_id))
+    return Users.query.get(int(user_id))
 
 # 登录
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm ()
     if form.validate_on_submit():
-        user = Admin.query.filter_by(id=1).first()
+        user = Users.query.filter_by(id=1).first()
         if user.username == form.username.data and \
                 user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
@@ -46,7 +46,7 @@ def delete_comment(id):
 
 def find_new_post():
     page = request.args.get('page', 1, type=int)
-    new_post = Post.query.filter_by(is_active=True).order_by(Post.timestamp.desc()).paginate(
+    new_post = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).all().paginate(
         page, per_page=20, error_out=False
     )
     new_posts = new_post.items
@@ -56,10 +56,10 @@ def find_new_post():
 @main.route('/', methods=['GET','POST'])
 def index():
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.filter_by(is_active=True).order_by(Post.timestamp.desc()).paginate(
+    pagination = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).paginate(
         page, per_page=5, error_out=False)
-    posts = pagination.items
-    new_posts = find_new_post()
+    posts = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).all()
+    new_posts = posts
     classify = u'所有文章'
     return render_template('index.html', posts=posts, new_posts=new_posts,
                            pagination=pagination, classify=classify)
@@ -67,14 +67,14 @@ def index():
 # 关于我
 @main.route('/about_me')
 def about_me():
-    user = Admin.query.filter_by(id=1).first()
+    user = Users.query.filter_by(id=1).first()
     return render_template('about_me.html', user=user)
 
 @main.route('/edit_abtme', methods=['GET', 'POST'])
 @login_required
 def edit_about_me():
     form = AbooutMeForm()
-    user = Admin.query.filter_by(id=1).first()
+    user = Users.query.filter_by(id=1).first()
     if form.validate_on_submit():
         user.about_me = form.about_me.data
         db.session.add(user)
@@ -85,35 +85,35 @@ def edit_about_me():
 
 @main.route('/code')
 def code():
-    posts = Post.query.filter_by(tag=u'code-编程', is_active=True).order_by(Post.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'code-编程', is_active=True).order_by(Posts.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'编程'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/database')
 def database():
-    posts = Post.query.filter_by(tag=u'database-数据库', is_active=True).order_by(Post.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'database-数据库', is_active=True).order_by(Posts.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'数据库'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/essay')
 def essay():
-    posts = Post.query.filter_by(tag=u'essay-随笔', is_active=True).order_by(Post.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'essay-随笔', is_active=True).order_by(Posts.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'随笔'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/tool')
 def tool():
-    posts = Post.query.filter_by(tag=u'tools-工具', is_active=True).order_by(Post.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'tools-工具', is_active=True).order_by(Posts.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'工具'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/net')
 def net():
-    posts = Post.query.filter_by(tag=u'net-网络', is_active=True).order_by(Post.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'net-网络', is_active=True).order_by(Posts.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'网络'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
@@ -137,7 +137,7 @@ def tag(s):
 def write_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(body=form.body.data, title=form.title.data, abstract=form.abstract.data,
+        post = Posts(body=form.body.data, title=form.title.data, abstract=form.abstract.data,
                     tag=tag_get(form))
         db.session.add(post)
         return redirect(url_for('main.index'))
@@ -153,14 +153,14 @@ def write_post():
 def edit_post(id):
     form = PostForm()
     if form.validate_on_submit():
-        post = Post.query.filter_by(id=id).first()
+        post = Posts.query.filter_by(id=id).first()
         post.body = form.body.data
         post.title = form.title.data
         post.abstract = form.abstract.data
         post.tag = tag_get(form)
         db.session.add(post)
         return redirect(url_for('main.post', id=post.id))
-    post = Post.query.filter_by(id=id).first()
+    post = Posts.query.filter_by(id=id).first()
     form.title.data = post.title
     form.tag.data = str(post.tag).split('-')[0]
     form.body.data = post.body
@@ -174,7 +174,7 @@ def edit_post(id):
 #修改is_active属性
 @main.route('/is_active', methods=['GET', 'POST'])
 def mod():
-    posts = Post.query.all()
+    posts = Posts.query.all()
     for p in posts:
         p.is_active = True
         db.session.add(p)
@@ -186,7 +186,7 @@ def mod():
 @main.route('/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_post(id):
-    post = Post.query.get_or_404(id)
+    post = Posts.query.get_or_404(id)
     post.is_active= False
     db.session.add(post)
     db.session.commit()
@@ -196,7 +196,7 @@ def delete_post(id):
 @main.route('/delete_fully/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_post_fully(id):
-    post = Post.query.get_or_404(id)
+    post = Posts.query.get_or_404(id)
     db.session.delete(post)
     comments = Comment.query.filter_by(post_id=id).all()
     if comments:
@@ -227,7 +227,7 @@ def post(id):
         comment = Comment(body=form.comment.data, connection=form.connect.data, post_id=id)
         db.session.add(comment)
         return redirect(url_for('main.post', id=id))
-    post = Post.query.get_or_404(id)
+    post = Posts.query.get_or_404(id)
     comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
     return render_template('view_post.html', post=post, form=form, comments=comments)
 
@@ -239,7 +239,7 @@ def allowed_file(filename):
 @main.route('/uploaded_file/<id>', methods=['GET', 'POST'])
 @login_required
 def uploaded_file(id):
-    post = Post.query.filter_by(id=id).first()
+    post = Posts.query.filter_by(id=id).first()
     p = post.head_pic
     if request.method == 'POST':
         file = request.files['file']
@@ -249,7 +249,7 @@ def uploaded_file(id):
                                 current_app.config['UPLOAD_FOLDER'], filename)
             file.save(path)
             p = os.path.join(current_app.config['PIC_FOLDER'], filename)
-            post = Post.query.filter_by(id=id).first()
+            post = Posts.query.filter_by(id=id).first()
             if post.head_pic:
                 q = os.path.join(current_app.config['BASE_DIR'],
                                 current_app.config['UPLOAD_FOLDER'], os.path.basename(post.head_pic))
@@ -264,7 +264,7 @@ def post_pic(id):
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
-            post = Post.query.filter_by(id=id).first()
+            post = Posts.query.filter_by(id=id).first()
             filename = secure_filename(file.filename)
             upload_folder = os.path.join(current_app.config['BASE_DIR'], current_app.config['UPLOAD_FOLDER'],
                                          '0'+str(post.id))
