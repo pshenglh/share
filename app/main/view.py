@@ -45,24 +45,23 @@ def delete_comment(id):
     return redirect(url_for('main.post', id=post_id))
 
 def find_new_post():
-    page = request.args.get('page', 1, type=int)
-    new_post = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).all().paginate(
-        page, per_page=20, error_out=False
-    )
-    new_posts = new_post.items
+    #page = request.args.get('page', 1, type=int)
+    #new_post = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).all().paginate(
+        #page, per_page=20, error_out=False
+    #)
+    new_posts = Posts.objects(is_active=True)
     return new_posts
 
 # 文章首页和分类
 @main.route('/', methods=['GET','POST'])
 def index():
-    page = request.args.get('page', 1, type=int)
-    pagination = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).paginate(
-        page, per_page=5, error_out=False)
-    posts = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).all()
-    new_posts = posts
+    #page = request.args.get('page', 1, type=int)
+    #pagination = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).paginate(
+        #page, per_page=5, error_out=False)
+    posts = Posts.objects()
+    new_posts = find_new_post()
     classify = u'所有文章'
-    return render_template('index.html', posts=posts, new_posts=new_posts,
-                           pagination=pagination, classify=classify)
+    return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 # 关于我
 @main.route('/about_me')
@@ -85,35 +84,35 @@ def edit_about_me():
 
 @main.route('/code')
 def code():
-    posts = Posts.query.filter_by(tag=u'code-编程', is_active=True).order_by(Posts.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'code-编程', is_active=True).descending(Posts.timestamp).all()
     new_posts = find_new_post()
     classify = u'编程'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/database')
 def database():
-    posts = Posts.query.filter_by(tag=u'database-数据库', is_active=True).order_by(Posts.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'database-数据库', is_active=True).descending(Posts.timestamp).all()
     new_posts = find_new_post()
     classify = u'数据库'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/essay')
 def essay():
-    posts = Posts.query.filter_by(tag=u'essay-随笔', is_active=True).order_by(Posts.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'essay-随笔', is_active=True).descending(Posts.timestamp).all()
     new_posts = find_new_post()
     classify = u'随笔'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/tool')
 def tool():
-    posts = Posts.query.filter_by(tag=u'tools-工具', is_active=True).order_by(Posts.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'tools-工具', is_active=True).descending(Posts.timestamp).all()
     new_posts = find_new_post()
     classify = u'工具'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/net')
 def net():
-    posts = Posts.query.filter_by(tag=u'net-网络', is_active=True).order_by(Posts.timestamp.desc()).all()
+    posts = Posts.query.filter_by(tag=u'net-网络', is_active=True).descending(Posts.timestamp).all()
     new_posts = find_new_post()
     classify = u'网络'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)

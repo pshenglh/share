@@ -1,4 +1,5 @@
 import os
+from mongoengine import connect
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,8 +14,12 @@ class Config():
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 
 class DevelopConfig(Config):
-    MONGOALCHEMY_DATABASE = 'blog'
-
+    MONGODB_SETTINGS = {
+        'db': 'blog',
+        'host': 'localhost',
+        'port': 27017
+    }
+    DEFAULT_CONNECTION_NAME = connect('blog')
 config = {
     'develop': DevelopConfig
 }
