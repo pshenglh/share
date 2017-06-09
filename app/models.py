@@ -29,8 +29,15 @@ class Posts(db.Document):
     abstract = db.StringField()
     tag = db.StringField()
     timestamp = db.DateTimeField(default=datetime.now())
-    is_active = db.BooleanField()
+    is_active = db.BooleanField(default=True)
     post_id = db.IntField()
 
     def __repr__(self):
         return '<Post %r>' % self.title
+
+
+class ConfigId(db.Document):
+    post_id = db.IntField()
+    user_id = db.IntField()
+    comment_id = db.IntField()
+    status = db.StringField(default='dev')

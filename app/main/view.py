@@ -4,26 +4,24 @@ from flask import render_template, redirect, url_for, request, current_app, make
 import os
 from flask_login import login_user, login_required, logout_user
 from werkzeug import secure_filename
-from ..models import Users, Posts
+from ..models import Users, Posts, ConfigId
 from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm
 from .. import db, login_manager
 from . import main
-from wtforms.compat import iteritems
 
 
 #flask_login回调函数
 @login_manager.user_loader
 def load_user(user_id):
-    return Users.query.get(int(user_id))
+    return Users.objects(id=str(user_id)).first()
 
 # 登录
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm ()
     if form.validate_on_submit():
-        user = Users.query.filter_by(id=1).first()
-        if user.username == form.username.data and \
-                user.verify_password(form.password.data):
+        user = Users.objects(username=form.username.data).first()
+        if user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
         return redirect(request.args.get('next') or url_for('main.index'))
     return render_template('login.html', form=form)
@@ -55,13 +53,14 @@ def find_new_post():
 # 文章首页和分类
 @main.route('/', methods=['GET','POST'])
 def index():
-    #page = request.args.get('page', 1, type=int)
-    #pagination = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).paginate(
-        #page, per_page=5, error_out=False)
-    posts = Posts.objects()
+    page = request.args.get('page', 1, type=int)
+    post_pagination = Posts.objects(is_active=True).order_by('-timestamp').paginate(
+        page=page, per_page=5)
+    posts = post_pagination.items
     new_posts = find_new_post()
     classify = u'所有文章'
-    return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
+    return render_template('index.html', posts=posts, new_posts=new_posts,
+                           classify=classify, pagination=post_pagination)
 
 # 关于我
 @main.route('/about_me')
@@ -84,35 +83,35 @@ def edit_about_me():
 
 @main.route('/code')
 def code():
-    posts = Posts.query.filter_by(tag=u'code-编程', is_active=True).descending(Posts.timestamp).all()
+    posts = Posts.objects(tag=u'code-编程', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'编程'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/database')
 def database():
-    posts = Posts.query.filter_by(tag=u'database-数据库', is_active=True).descending(Posts.timestamp).all()
+    posts = Posts.objects(tag=u'database-数据库', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'数据库'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/essay')
 def essay():
-    posts = Posts.query.filter_by(tag=u'essay-随笔', is_active=True).descending(Posts.timestamp).all()
+    posts = Posts.objects(tag=u'essay-随笔', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'随笔'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/tool')
 def tool():
-    posts = Posts.query.filter_by(tag=u'tools-工具', is_active=True).descending(Posts.timestamp).all()
+    posts = Posts.objects(tag=u'tools-工具', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'工具'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/net')
 def net():
-    posts = Posts.query.filter_by(tag=u'net-网络', is_active=True).descending(Posts.timestamp).all()
+    posts = Posts.objects(tag=u'net-网络', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'网络'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
@@ -136,9 +135,12 @@ def tag(s):
 def write_post():
     form = PostForm()
     if form.validate_on_submit():
+        status = ConfigId.objects(status='dev').first()
         post = Posts(body=form.body.data, title=form.title.data, abstract=form.abstract.data,
-                    tag=tag_get(form))
-        db.session.add(post)
+                    tag=tag_get(form), post_id=status.post_id+1)
+        status.post_id = status.post_id + 1
+        status.save()
+        post.save()
         return redirect(url_for('main.index'))
     form.title.data = ' '
     form.abstract.data = ' '
@@ -152,14 +154,14 @@ def write_post():
 def edit_post(id):
     form = PostForm()
     if form.validate_on_submit():
-        post = Posts.query.filter_by(id=id).first()
+        post = Posts.objects(post_id=id).first()
         post.body = form.body.data
         post.title = form.title.data
         post.abstract = form.abstract.data
         post.tag = tag_get(form)
-        db.session.add(post)
-        return redirect(url_for('main.post', id=post.id))
-    post = Posts.query.filter_by(id=id).first()
+        post.save()
+        return redirect(url_for('main.post', id=post.post_id))
+    post = Posts.objects(post_id=id).first()
     form.title.data = post.title
     form.tag.data = str(post.tag).split('-')[0]
     form.body.data = post.body
@@ -185,21 +187,16 @@ def mod():
 @main.route('/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_post(id):
-    post = Posts.query.get_or_404(id)
+    post = Posts.objects(post_id=id).first()
     post.is_active= False
-    db.session.add(post)
-    db.session.commit()
+    post.save()
     return redirect(url_for('main.index'))
 
 # 测底删除博客
 @main.route('/delete_fully/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_post_fully(id):
-    post = Posts.query.get_or_404(id)
-    db.session.delete(post)
-    comments = Comment.query.filter_by(post_id=id).all()
-    if comments:
-        db.session.delete(comments)
+    post = Posts.objects(post_id=id).first()
     if post.head_pic:
         q = os.path.join(current_app.config['BASE_DIR'],
                          current_app.config['UPLOAD_FOLDER'], os.path.basename(post.head_pic))
@@ -216,19 +213,20 @@ def delete_post_fully(id):
                                          '0'+str(post.id))
         if os.path.exists(r):
             os.rmdir(r)
+    post.delete()
     return redirect(url_for('main.index'))
 
 # 查看博客
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     form = CommentForm()
-    if request.method == 'POST':
-        comment = Comment(body=form.comment.data, connection=form.connect.data, post_id=id)
-        db.session.add(comment)
-        return redirect(url_for('main.post', id=id))
-    post = Posts.query.get_or_404(id)
-    comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
-    return render_template('view_post.html', post=post, form=form, comments=comments)
+    #if request.method == 'POST':
+        #comment = Comment(body=form.comment.data, connection=form.connect.data, post_id=id)
+        #db.session.add(comment)
+        #return redirect(url_for('main.post', id=id))
+    post = Posts.objects(post_id=id).first()
+    #comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
+    return render_template('view_post.html', post=post, form=form)
 
 # 文件上传
 def allowed_file(filename):
@@ -238,7 +236,7 @@ def allowed_file(filename):
 @main.route('/uploaded_file/<id>', methods=['GET', 'POST'])
 @login_required
 def uploaded_file(id):
-    post = Posts.query.filter_by(id=id).first()
+    post = Posts.objects(post_id=id).first()
     p = post.head_pic
     if request.method == 'POST':
         file = request.files['file']
@@ -248,13 +246,14 @@ def uploaded_file(id):
                                 current_app.config['UPLOAD_FOLDER'], filename)
             file.save(path)
             p = os.path.join(current_app.config['PIC_FOLDER'], filename)
-            post = Posts.query.filter_by(id=id).first()
+            post = Posts.objects(post_id=id).first()
             if post.head_pic:
                 q = os.path.join(current_app.config['BASE_DIR'],
                                 current_app.config['UPLOAD_FOLDER'], os.path.basename(post.head_pic))
                 if os.path.exists(q):
                     os.remove(q)
             post.head_pic = p
+            post.save()
     return render_template('theme_pic.html', filenam=p, id=id)
 
 @main.route('/post_pic/<int:id>',methods=['GET','POST'])
@@ -263,18 +262,19 @@ def post_pic(id):
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
-            post = Posts.query.filter_by(id=id).first()
+            post = Posts.objects(post_id=id).first()
             filename = secure_filename(file.filename)
             upload_folder = os.path.join(current_app.config['BASE_DIR'], current_app.config['UPLOAD_FOLDER'],
-                                         '0'+str(post.id))
+                                         '0'+str(post.post_id))
             if not os.path.exists(upload_folder):
                 os.mkdir(upload_folder)
             file.save(os.path.join(upload_folder, filename))
-            pic_path = os.path.join(current_app.config['PIC_FOLDER'], '0'+str(post.id), filename)
+            pic_path = os.path.join(current_app.config['PIC_FOLDER'], '0'+str(post.post_id), filename)
             if not post.body_pic:
                 post.body_pic = pic_path
             else:
                 post.body_pic = post.body_pic + '|' + pic_path
+            post.save()
             return redirect(url_for('main.edit_post', id=id))
     return render_template('upload_file.html')
 

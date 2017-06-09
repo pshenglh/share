@@ -12,7 +12,7 @@
       {% if current_user.is_authenticated %}
         <div class="right-btn">
           <a class="btn btn-primary" data-toggle="modal" data-target="#myModal">删除</a>
-          <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}">编辑</a>
+          <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.post_id) }}">编辑</a>
         </div>
       {% endif %}
       <!-- 评论部分 -->
@@ -42,7 +42,7 @@
          <div class="modal-body">确定删除？</div>
          <div class="modal-footer">
            <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
-           <a class="btn btn-primary" href="{{ url_for('.delete_post',id=post.id) }}" role="button">删除</a>
+           <a class="btn btn-primary" href="{{ url_for('.delete_post',id=post.post_id) }}" role="button">删除</a>
          </div>
        </div><!-- /.modal-content -->
      </div><!-- /.modal -->
