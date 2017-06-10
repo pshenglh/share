@@ -4,16 +4,20 @@ from flask import render_template, redirect, url_for, request, current_app, make
 import os
 from flask_login import login_user, login_required, logout_user
 from werkzeug import secure_filename
-from ..models import Users, Posts, ConfigId
+from ..models import Users, Posts, ConfigId, Permissions
 from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm
 from .. import db, login_manager
 from . import main
+from ..decorators import permission_required, admin_required
+from .. import mail
+from flask_mail import Message
 
 
-#flask_login回调函数
+# flask_login回调函数
 @login_manager.user_loader
 def load_user(user_id):
     return Users.objects(id=str(user_id)).first()
+
 
 # 登录
 @main.route('/login', methods=['GET', 'POST'])
@@ -26,12 +30,31 @@ def login():
         return redirect(request.args.get('next') or url_for('main.index'))
     return render_template('login.html', form=form)
 
+
+# 用户注册
+def register():
+    pass
+
+
+@main.route('/mail')
+def mail():
+    msg = Message('test subject', sender='674799317@qq.com',
+                  recipients=['674799317@qq.com'])
+    msg.body = 'text body'
+    msg.html = '<b>HTML</b>body'
+    with current_app.app_context():
+        mail.send(msg)
+
+
+
+
 # 登出
 @main.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
 
 # 修改评论
 @main.route('/delete_comment/<int:id>', methods=['GET', 'POST'])
@@ -42,6 +65,7 @@ def delete_comment(id):
     db.session.delete(comment)
     return redirect(url_for('main.post', id=post_id))
 
+
 def find_new_post():
     #page = request.args.get('page', 1, type=int)
     #new_post = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).all().paginate(
@@ -49,6 +73,7 @@ def find_new_post():
     #)
     new_posts = Posts.objects(is_active=True)
     return new_posts
+
 
 # 文章首页和分类
 @main.route('/', methods=['GET','POST'])
@@ -62,11 +87,13 @@ def index():
     return render_template('index.html', posts=posts, new_posts=new_posts,
                            classify=classify, pagination=post_pagination)
 
+
 # 关于我
 @main.route('/about_me')
 def about_me():
     user = Users.query.filter_by(id=1).first()
     return render_template('about_me.html', user=user)
+
 
 @main.route('/edit_abtme', methods=['GET', 'POST'])
 @login_required
@@ -88,12 +115,14 @@ def code():
     classify = u'编程'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
+
 @main.route('/database')
 def database():
     posts = Posts.objects(tag=u'database-数据库', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'数据库'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
+
 
 @main.route('/essay')
 def essay():
@@ -102,6 +131,7 @@ def essay():
     classify = u'随笔'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
+
 @main.route('/tool')
 def tool():
     posts = Posts.objects(tag=u'tools-工具', is_active=True).order_by('-timestamp')
@@ -109,12 +139,14 @@ def tool():
     classify = u'工具'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
+
 @main.route('/net')
 def net():
     posts = Posts.objects(tag=u'net-网络', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'网络'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
+
 
 def tag_get(form):
     for value, label in form.tag.choices:
@@ -124,14 +156,17 @@ def tag_get(form):
             tag = '-'.join(t)
             return tag
 
+
 @main.app_template_filter('tag_get')
 def tag(s):
     list = str(s).split('-')
     return list[1]
 
+
 # 编写博客
 @main.route('/write_post', methods=['GET', 'POST'])
 @login_required
+@permission_required(Permissions.ADMINISTER)
 def write_post():
     form = PostForm()
     if form.validate_on_submit():
@@ -147,6 +182,7 @@ def write_post():
     form.tag.data = 'code'
     form.body.data = ' '
     return render_template('write_post.html', form=form, id=0)
+
 
 # 修改博客
 @main.route('/edit_post/<int:id>',methods=['GET','POST'])
@@ -172,6 +208,7 @@ def edit_post(id):
         p = None
     return render_template('post.html', form=form, id=id, filenam=p)
 
+
 #修改is_active属性
 @main.route('/is_active', methods=['GET', 'POST'])
 def mod():
@@ -191,6 +228,7 @@ def delete_post(id):
     post.is_active= False
     post.save()
     return redirect(url_for('main.index'))
+
 
 # 测底删除博客
 @main.route('/delete_fully/<int:id>', methods=['GET', 'POST'])
@@ -216,6 +254,7 @@ def delete_post_fully(id):
     post.delete()
     return redirect(url_for('main.index'))
 
+
 # 查看博客
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
@@ -228,10 +267,12 @@ def post(id):
     #comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
     return render_template('view_post.html', post=post, form=form)
 
+
 # 文件上传
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in current_app.config['ALLOWED_EXTENSIONS']
+
 
 @main.route('/uploaded_file/<id>', methods=['GET', 'POST'])
 @login_required
@@ -256,6 +297,7 @@ def uploaded_file(id):
             post.save()
     return render_template('theme_pic.html', filenam=p, id=id)
 
+
 @main.route('/post_pic/<int:id>',methods=['GET','POST'])
 @login_required
 def post_pic(id):
@@ -278,11 +320,18 @@ def post_pic(id):
             return redirect(url_for('main.edit_post', id=id))
     return render_template('upload_file.html')
 
+
 # 错误处理
 @main.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
+
 @main.errorhandler(500)
 def internal_server_error(e):
     return render_template('500.html'), 500
+
+
+@main.errorhandler(403)
+def internal_server_error(e):
+    return render_template('403.html'), 403
