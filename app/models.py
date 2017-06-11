@@ -3,8 +3,12 @@ from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_security import UserMixin, RoleMixin
 from flask_login import current_user
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask import current_app
+
 
 class Users(db.Document, UserMixin):
+    user_id = db.IntField()
     email = db.StringField(unique=True, max_length=255)
     username = db.StringField(unique=True)
     active = db.BooleanField(default=True)
@@ -13,6 +17,7 @@ class Users(db.Document, UserMixin):
     confirm_at = db.DateTimeField()
     user_pic = db.StringField()
     description = db.StringField()
+    confirmed = db.BooleanField(default=False)
 
     @property
     def password(self):
@@ -28,6 +33,24 @@ class Users(db.Document, UserMixin):
     def can(self, permission):
         return current_user is not None and \
                (current_user.role.permission & permission) == permission
+
+    def generation_confirmaton_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'confirm': self.user_id})
+
+    def confirm(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('confirm') != self.user_id:
+            print data.get('confirm')
+            return False
+        self.confirmed = True
+        self.save()
+        return True
+
 
 class Role(db.Document, RoleMixin):
     role_id = db.IntField()

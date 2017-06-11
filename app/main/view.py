@@ -2,15 +2,17 @@
 import sys
 from flask import render_template, redirect, url_for, request, current_app, make_response
 import os
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
 from ..models import Users, Posts, ConfigId, Permissions
 from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm, RegisterForm
-from .. import db, login_manager, mail
+from .. import db, login_manager
 from . import main
-from ..decorators import permission_required, admin_required
-from flask_mail import Message
+from ..decorators import permission_required
 from mongoengine import NotUniqueError
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
 
 
 import sys
@@ -39,16 +41,6 @@ def login():
     return render_template('login.html', form=form)
 
 
-@main.route('/mail')
-def send_mail():
-    msg = Message('test subject', sender='674799317@qq.com',
-                  recipients=['674799317@qq.com'])
-    msg.body = 'text body'
-    msg.html = '<b>HTML</b>body'
-    mail.send(msg)
-    return make_response('success')
-
-
 # 注册
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -60,6 +52,27 @@ def register():
         c = ConfigId.objects(status='dev').first()
         u.user_id = c.user_id
         c.user_id += 1
+
+        token = u.generation_confirmaton_token()
+        mail_host = current_app.config['MAIL_SERVER']  # 设置服务器
+        mail_user = current_app.config['MAIL_USERNAME']  # 用户名
+        mail_pass = current_app.config['MAIL_PASSWORD']  # 口令,QQ邮箱是输入授权码，在qq邮箱设置 里用验证过的手机发送短信获得，不含空格
+        message = MIMEText(url_for('main.confirm', token=token, _external=True), 'plain', 'utf-8')
+        message['From'] = Header("ppyy", 'utf-8')
+        message['To'] = Header("you", 'utf-8')
+        sender = '674799317@qq.com'
+        receivers = [u.email]
+        subject = 'user confirm'
+        message['Subject'] = Header(subject, 'utf-8')
+        try:
+            smtpObj = smtplib.SMTP_SSL(mail_host, 465)
+            smtpObj.login(mail_user, mail_pass)
+            smtpObj.sendmail(sender, receivers, message.as_string())
+            smtpObj.quit()
+            print u"邮件发送成功"
+        except smtplib.SMTPException, e:
+            print e
+
         try:
             u.save()
         except NotUniqueError:
@@ -74,6 +87,14 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+@main.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    if current_user.confirm(token):
+        return make_response('confirm success')
+    else:
+        return make_response('error')
 
 
 # 修改评论

@@ -15,7 +15,6 @@ class Config():
 
     MAIL_SERVER = 'smtp.qq.com'
     MAIL_PORT = 465
-    MAIL_USER_SSL = True
     MAIL_USERNAME = '674799317@qq.com'
     MAIL_PASSWORD = 'pkqcdrfgqgglbahi'
 
