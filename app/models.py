@@ -1,13 +1,29 @@
 from datetime import datetime
-from flask_login import UserMixin
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_security import UserMixin, RoleMixin
+from flask_login import current_user
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask import current_app
+
 
 class Users(db.Document, UserMixin):
-    username = db.StringField()
+    user_id = db.IntField()
+    email = db.StringField(unique=True, max_length=255)
+    username = db.StringField(unique=True)
+    active = db.BooleanField(default=True)
+    role = db.ReferenceField('Role')
     password_hash = db.StringField()
+    confirm_at = db.DateTimeField()
     user_pic = db.StringField()
-    about_me = db.StringField()
+    description = db.StringField()
+    confirmed = db.BooleanField(default=False)
+
+    def __init__(self, **kwargs):
+        super(Users, self).__init__(**kwargs)
+        if self.role == None:
+            r = Role.objects(name='User').first()
+            self.role = r
 
     @property
     def password(self):
@@ -19,6 +35,70 @@ class Users(db.Document, UserMixin):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def can(self, permission):
+        return current_user is not None and \
+               (current_user.role.permission & permission) == permission
+
+    def generation_confirmaton_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'confirm': self.user_id})
+
+    def confirm(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('confirm') != self.user_id:
+            return False
+        self.confirmed = True
+        self.save()
+        return True
+
+
+class Role(db.Document, RoleMixin):
+    role_id = db.IntField()
+    name = db.StringField(max_length=80, unique=True)
+    permission = db.IntField()
+    default = db.BooleanField(default=False)
+    description = db.StringField(max_length=255)
+
+    @staticmethod
+    def insert_roles():
+        roles = {
+            'User': (Permissions.FOLLOW |
+                     Permissions.COMMENT |
+                     Permissions.WRITE_ARTICLES, True),
+            'Moderator': (Permissions.FOLLOW |
+                          Permissions.COMMENT |
+                          Permissions.WRITE_ARTICLES |
+                          Permissions.MODERATE_COMMENT, False),
+            'Administrator': (Permissions.FOLLOW |
+                              Permissions.COMMENT |
+                              Permissions.WRITE_ARTICLES |
+                              Permissions.MODERATE_COMMENT |
+                              Permissions.ADMINISTER, False)
+        }
+        for r in roles:
+            role = Role.objects(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.permission = roles[r][0]
+            role.default = roles[r][1]
+            c = ConfigId.objects(status='dev').first()
+            role.role_id = c.role_id
+            c.role_id += 1
+            role.save()
+            c.save()
+
+
+class Permissions:
+    FOLLOW = 0x01
+    COMMENT = 0x02
+    WRITE_ARTICLES = 0x04
+    MODERATE_COMMENT = 0x08
+    ADMINISTER = 0x80
 
 
 class Posts(db.Document):
@@ -40,4 +120,5 @@ class ConfigId(db.Document):
     post_id = db.IntField()
     user_id = db.IntField()
     comment_id = db.IntField()
+    role_id = db.IntField()
     status = db.StringField(default='dev')

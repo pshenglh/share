@@ -1,19 +1,33 @@
-#  -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import sys
 from flask import render_template, redirect, url_for, request, current_app, make_response
 import os
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
-from ..models import Users, Posts, ConfigId
-from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm
+from ..models import Users, Posts, ConfigId, Permissions
+from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm, RegisterForm
 from .. import db, login_manager
 from . import main
+from ..decorators import permission_required
+from mongoengine import NotUniqueError
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+import sys
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
-#flask_login回调函数
+# 处理中文编码的问题
+default_encoding = 'utf-8'
+if sys.getdefaultencoding() != default_encoding:
+    reload(sys)
+
+
+# flask_login回调函数
 @login_manager.user_loader
 def load_user(user_id):
     return Users.objects(id=str(user_id)).first()
+
 
 # 登录
 @main.route('/login', methods=['GET', 'POST'])
@@ -26,12 +40,73 @@ def login():
         return redirect(request.args.get('next') or url_for('main.index'))
     return render_template('login.html', form=form)
 
+
+# 注册
+@main.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        u = Users(email=form.email.data,
+                  username=form.username.data)
+        u.password = form.password.data
+        c = ConfigId.objects(status='dev').first()
+        u.user_id = c.user_id
+        c.user_id += 1
+
+        token = u.generation_confirmaton_token()
+        send_mail(u, token)
+
+        try:
+            u.save()
+        except NotUniqueError:
+            return make_response('not unique')
+        return redirect(url_for('main.login'))
+    return render_template('register.html', form=form)
+
+
+def send_mail(user, token):
+    mail_host = current_app.config['MAIL_SERVER']
+    mail_user = current_app.config['MAIL_USERNAME']
+    mail_pass = current_app.config['MAIL_PASSWORD']
+    link = url_for('main.confirm', token=token, _external=True)
+    message = MIMEText(render_template('confirm_file.txt', user=user, link=link), 'plain', 'utf-8')
+    message['From'] = Header("网站管理员", 'utf-8')
+    message['To'] = Header(user.username,'utf-8')
+    sender = current_app.config['MAIL_SENDER']
+    receivers = [user.email]
+    subject = '用户邮箱确认'
+    message['Subject'] = Header(subject, 'utf-8')
+    try:
+        smtpObj = smtplib.SMTP_SSL(mail_host, 465)
+        smtpObj.login(mail_user, mail_pass)
+        smtpObj.sendmail(sender, receivers, message.as_string())
+        smtpObj.quit()
+    except smtplib.SMTPException, e:
+        print e
+
+
 # 登出
 @main.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+@main.route('/confirm/<token>')
+def confirm(token):
+    s = Serializer(current_app.config['SECRET_KEY'])
+    try:
+        data = s.loads(token)
+    except:
+        return False
+    id = data.get('confirm')
+    user = Users.objects(user_id=id).first()
+    login_user(user)
+    if current_user.confirm(token):
+        return make_response('confirm success')
+    else:
+        return make_response('error')
+
 
 # 修改评论
 @main.route('/delete_comment/<int:id>', methods=['GET', 'POST'])
@@ -42,6 +117,7 @@ def delete_comment(id):
     db.session.delete(comment)
     return redirect(url_for('main.post', id=post_id))
 
+
 def find_new_post():
     #page = request.args.get('page', 1, type=int)
     #new_post = Posts.query.filter_by(is_active=True).descending(Posts.timestamp).all().paginate(
@@ -49,6 +125,7 @@ def find_new_post():
     #)
     new_posts = Posts.objects(is_active=True)
     return new_posts
+
 
 # 文章首页和分类
 @main.route('/', methods=['GET','POST'])
@@ -62,11 +139,13 @@ def index():
     return render_template('index.html', posts=posts, new_posts=new_posts,
                            classify=classify, pagination=post_pagination)
 
+
 # 关于我
 @main.route('/about_me')
 def about_me():
     user = Users.query.filter_by(id=1).first()
     return render_template('about_me.html', user=user)
+
 
 @main.route('/edit_abtme', methods=['GET', 'POST'])
 @login_required
@@ -88,12 +167,14 @@ def code():
     classify = u'编程'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
+
 @main.route('/database')
 def database():
     posts = Posts.objects(tag=u'database-数据库', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'数据库'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
+
 
 @main.route('/essay')
 def essay():
@@ -102,6 +183,7 @@ def essay():
     classify = u'随笔'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
+
 @main.route('/tool')
 def tool():
     posts = Posts.objects(tag=u'tools-工具', is_active=True).order_by('-timestamp')
@@ -109,12 +191,14 @@ def tool():
     classify = u'工具'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
+
 @main.route('/net')
 def net():
     posts = Posts.objects(tag=u'net-网络', is_active=True).order_by('-timestamp')
     new_posts = find_new_post()
     classify = u'网络'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
+
 
 def tag_get(form):
     for value, label in form.tag.choices:
@@ -124,14 +208,17 @@ def tag_get(form):
             tag = '-'.join(t)
             return tag
 
+
 @main.app_template_filter('tag_get')
 def tag(s):
     list = str(s).split('-')
     return list[1]
 
+
 # 编写博客
 @main.route('/write_post', methods=['GET', 'POST'])
 @login_required
+@permission_required(Permissions.ADMINISTER)
 def write_post():
     form = PostForm()
     if form.validate_on_submit():
@@ -147,6 +234,7 @@ def write_post():
     form.tag.data = 'code'
     form.body.data = ' '
     return render_template('write_post.html', form=form, id=0)
+
 
 # 修改博客
 @main.route('/edit_post/<int:id>',methods=['GET','POST'])
@@ -172,6 +260,7 @@ def edit_post(id):
         p = None
     return render_template('post.html', form=form, id=id, filenam=p)
 
+
 #修改is_active属性
 @main.route('/is_active', methods=['GET', 'POST'])
 def mod():
@@ -191,6 +280,7 @@ def delete_post(id):
     post.is_active= False
     post.save()
     return redirect(url_for('main.index'))
+
 
 # 测底删除博客
 @main.route('/delete_fully/<int:id>', methods=['GET', 'POST'])
@@ -216,6 +306,7 @@ def delete_post_fully(id):
     post.delete()
     return redirect(url_for('main.index'))
 
+
 # 查看博客
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
@@ -228,10 +319,12 @@ def post(id):
     #comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
     return render_template('view_post.html', post=post, form=form)
 
+
 # 文件上传
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in current_app.config['ALLOWED_EXTENSIONS']
+
 
 @main.route('/uploaded_file/<id>', methods=['GET', 'POST'])
 @login_required
@@ -256,6 +349,7 @@ def uploaded_file(id):
             post.save()
     return render_template('theme_pic.html', filenam=p, id=id)
 
+
 @main.route('/post_pic/<int:id>',methods=['GET','POST'])
 @login_required
 def post_pic(id):
@@ -278,11 +372,18 @@ def post_pic(id):
             return redirect(url_for('main.edit_post', id=id))
     return render_template('upload_file.html')
 
+
 # 错误处理
 @main.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
+
 @main.errorhandler(500)
 def internal_server_error(e):
     return render_template('500.html'), 500
+
+
+@main.errorhandler(403)
+def internal_server_error(e):
+    return render_template('403.html'), 403

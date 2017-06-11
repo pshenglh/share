@@ -13,6 +13,12 @@ class Config():
     UPLOAD_FOLDER = UPLOAD_FOLDER
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 
+    MAIL_SERVER = 'smtp.qq.com'
+    MAIL_PORT = 465
+    MAIL_USERNAME = '674799317@qq.com'
+    MAIL_PASSWORD = 'pkqcdrfgqgglbahi'
+    MAIL_SENDER = '674799317@qq.com'
+
 class DevelopConfig(Config):
     MONGODB_SETTINGS = {
         'db': 'blog',
