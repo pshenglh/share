@@ -5,14 +5,14 @@ from flask_security import UserMixin, RoleMixin
 from flask_login import current_user
 
 class Users(db.Document, UserMixin):
-    email = db.StringField(max_length=255)
-    username = db.StringField()
+    email = db.StringField(unique=True, max_length=255)
+    username = db.StringField(unique=True)
     active = db.BooleanField(default=True)
     role = db.ReferenceField('Role')
     password_hash = db.StringField()
     confirm_at = db.DateTimeField()
     user_pic = db.StringField()
-    about_me = db.StringField()
+    description = db.StringField()
 
     @property
     def password(self):

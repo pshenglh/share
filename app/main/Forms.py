@@ -4,12 +4,21 @@ from wtforms import StringField, PasswordField, SubmitField, TextAreaField, Sele
 from wtforms.validators import DataRequired, Length
 from flaskckeditor import CKEditor
 
+import sys
+
+# 处理中文编码的问题
+default_encoding = 'utf-8'
+if sys.getdefaultencoding() != default_encoding:
+    reload(sys)
+
+    sys.setdefaultencoding(default_encoding)
+
 
 class PostForm(FlaskForm, CKEditor):
     title = StringField('标题', validators=[DataRequired()])
     abstract = TextAreaField('摘要', validators=[DataRequired()])
     tag = SelectField('标签', choices=[('code', '编程'), ('database', '数据库'), ('essay', '随笔'),
-                                            ('tools', '工具'), ('net', '网络')], validators=[DataRequired()])
+                                        ('tools', '工具'), ('net', '网络')], validators=[DataRequired()])
     body = TextAreaField("What's on your mind?", validators=[DataRequired()])
     submit = SubmitField('提交')
 
@@ -27,7 +36,11 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    pass
+    email = StringField('邮箱', validators=[DataRequired()])
+    username = StringField('用户名', validators=[DataRequired()])
+    password = PasswordField('密码', validators=[DataRequired()])
+    confirm_password = PasswordField('确认密码', validators=[DataRequired()])
+    submit = SubmitField('注册')
 
 
 class CommentForm(FlaskForm):

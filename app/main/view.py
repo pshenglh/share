@@ -5,12 +5,20 @@ import os
 from flask_login import login_user, login_required, logout_user
 from werkzeug import secure_filename
 from ..models import Users, Posts, ConfigId, Permissions
-from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm
-from .. import db, login_manager
+from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm, RegisterForm
+from .. import db, login_manager, mail
 from . import main
 from ..decorators import permission_required, admin_required
-from .. import mail
 from flask_mail import Message
+from mongoengine import NotUniqueError
+
+
+import sys
+
+# 处理中文编码的问题
+default_encoding = 'utf-8'
+if sys.getdefaultencoding() != default_encoding:
+    reload(sys)
 
 
 # flask_login回调函数
@@ -31,21 +39,33 @@ def login():
     return render_template('login.html', form=form)
 
 
-# 用户注册
-def register():
-    pass
-
-
 @main.route('/mail')
-def mail():
+def send_mail():
     msg = Message('test subject', sender='674799317@qq.com',
                   recipients=['674799317@qq.com'])
     msg.body = 'text body'
     msg.html = '<b>HTML</b>body'
-    with current_app.app_context():
-        mail.send(msg)
+    mail.send(msg)
+    return make_response('success')
 
 
+# 注册
+@main.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        u = Users(email=form.email.data,
+              username=form.username.data)
+        u.password = form.password.data
+        c = ConfigId.objects(status='dev').first()
+        u.user_id = c.user_id
+        c.user_id += 1
+        try:
+            u.save()
+        except NotUniqueError:
+            return make_response('not unique')
+        return redirect(url_for('main.login'))
+    return render_template('register.html', form=form)
 
 
 # 登出
