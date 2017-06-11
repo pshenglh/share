@@ -3,8 +3,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, BooleanField
 from wtforms.validators import DataRequired, Length
 from flaskckeditor import CKEditor
-
 import sys
+
 
 # 处理中文编码的问题
 default_encoding = 'utf-8'

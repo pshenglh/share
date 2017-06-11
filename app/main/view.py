@@ -1,4 +1,4 @@
-#  -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import sys
 from flask import render_template, redirect, url_for, request, current_app, make_response
 import os
@@ -13,9 +13,9 @@ from mongoengine import NotUniqueError
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
-
-
 import sys
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
 
 # 处理中文编码的问题
 default_encoding = 'utf-8'
@@ -47,31 +47,14 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         u = Users(email=form.email.data,
-              username=form.username.data)
+                  username=form.username.data)
         u.password = form.password.data
         c = ConfigId.objects(status='dev').first()
         u.user_id = c.user_id
         c.user_id += 1
 
         token = u.generation_confirmaton_token()
-        mail_host = current_app.config['MAIL_SERVER']  # 设置服务器
-        mail_user = current_app.config['MAIL_USERNAME']  # 用户名
-        mail_pass = current_app.config['MAIL_PASSWORD']  # 口令,QQ邮箱是输入授权码，在qq邮箱设置 里用验证过的手机发送短信获得，不含空格
-        message = MIMEText(url_for('main.confirm', token=token, _external=True), 'plain', 'utf-8')
-        message['From'] = Header("ppyy", 'utf-8')
-        message['To'] = Header("you", 'utf-8')
-        sender = '674799317@qq.com'
-        receivers = [u.email]
-        subject = 'user confirm'
-        message['Subject'] = Header(subject, 'utf-8')
-        try:
-            smtpObj = smtplib.SMTP_SSL(mail_host, 465)
-            smtpObj.login(mail_user, mail_pass)
-            smtpObj.sendmail(sender, receivers, message.as_string())
-            smtpObj.quit()
-            print u"邮件发送成功"
-        except smtplib.SMTPException, e:
-            print e
+        send_mail(u, token)
 
         try:
             u.save()
@@ -79,6 +62,27 @@ def register():
             return make_response('not unique')
         return redirect(url_for('main.login'))
     return render_template('register.html', form=form)
+
+
+def send_mail(user, token):
+    mail_host = current_app.config['MAIL_SERVER']
+    mail_user = current_app.config['MAIL_USERNAME']
+    mail_pass = current_app.config['MAIL_PASSWORD']
+    link = url_for('main.confirm', token=token, _external=True)
+    message = MIMEText(render_template('confirm_file.txt', user=user, link=link), 'plain', 'utf-8')
+    message['From'] = Header("网站管理员", 'utf-8')
+    message['To'] = Header(user.username,'utf-8')
+    sender = current_app.config['MAIL_SENDER']
+    receivers = [user.email]
+    subject = '用户邮箱确认'
+    message['Subject'] = Header(subject, 'utf-8')
+    try:
+        smtpObj = smtplib.SMTP_SSL(mail_host, 465)
+        smtpObj.login(mail_user, mail_pass)
+        smtpObj.sendmail(sender, receivers, message.as_string())
+        smtpObj.quit()
+    except smtplib.SMTPException, e:
+        print e
 
 
 # 登出
@@ -89,8 +93,15 @@ def logout():
     return redirect(url_for('main.index'))
 
 @main.route('/confirm/<token>')
-@login_required
 def confirm(token):
+    s = Serializer(current_app.config['SECRET_KEY'])
+    try:
+        data = s.loads(token)
+    except:
+        return False
+    id = data.get('confirm')
+    user = Users.objects(user_id=id).first()
+    login_user(user)
     if current_user.confirm(token):
         return make_response('confirm success')
     else:

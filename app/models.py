@@ -19,6 +19,12 @@ class Users(db.Document, UserMixin):
     description = db.StringField()
     confirmed = db.BooleanField(default=False)
 
+    def __init__(self, **kwargs):
+        super(Users, self).__init__(**kwargs)
+        if self.role == None:
+            r = Role.objects(name='User').first()
+            self.role = r
+
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
@@ -45,7 +51,6 @@ class Users(db.Document, UserMixin):
         except:
             return False
         if data.get('confirm') != self.user_id:
-            print data.get('confirm')
             return False
         self.confirmed = True
         self.save()
@@ -62,18 +67,18 @@ class Role(db.Document, RoleMixin):
     @staticmethod
     def insert_roles():
         roles = {
-            'User':(Permissions.FOLLOW |
-                    Permissions.COMMENT |
-                    Permissions.WRITE_ARTICLES, True),
-            'Moderator':(Permissions.FOLLOW |
-                         Permissions.COMMENT |
-                         Permissions.WRITE_ARTICLES |
-                         Permissions.MODERATE_COMMENT, False),
-            'Administrator':(Permissions.FOLLOW |
-                         Permissions.COMMENT |
-                         Permissions.WRITE_ARTICLES |
-                         Permissions.MODERATE_COMMENT |
-                         Permissions.ADMINISTER,False)
+            'User': (Permissions.FOLLOW |
+                     Permissions.COMMENT |
+                     Permissions.WRITE_ARTICLES, True),
+            'Moderator': (Permissions.FOLLOW |
+                          Permissions.COMMENT |
+                          Permissions.WRITE_ARTICLES |
+                          Permissions.MODERATE_COMMENT, False),
+            'Administrator': (Permissions.FOLLOW |
+                              Permissions.COMMENT |
+                              Permissions.WRITE_ARTICLES |
+                              Permissions.MODERATE_COMMENT |
+                              Permissions.ADMINISTER, False)
         }
         for r in roles:
             role = Role.objects(name=r).first()
@@ -88,13 +93,13 @@ class Role(db.Document, RoleMixin):
             c.save()
 
 
-
 class Permissions:
     FOLLOW = 0x01
     COMMENT = 0x02
     WRITE_ARTICLES = 0x04
     MODERATE_COMMENT = 0x08
     ADMINISTER = 0x80
+
 
 class Posts(db.Document):
     head_pic = db.StringField()
