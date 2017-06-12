@@ -21,7 +21,8 @@
             <div class="panel panel-default">
               <div class="panel-body">
                 <p>发布时间：{{ post.timestamp.strftime("%Y-%m-%d") }} &nbsp
-                  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp分类：{{ post.tag |  tag_get }}</p>
+                  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp分类：{{ post.tag |  tag_get }}
+                  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp作者：{{ post.author.username }}</p>
                 {% if current_user.is_authenticated %}
                   <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"

@@ -40,6 +40,20 @@ def login():
     return render_template('login.html', form=form)
 
 
+# 用户详细信息
+@main.route('/user/<int:user_id>')
+def user_detail(user_id):
+    user = Users.objects(user_id=user_id).first()
+    blog = Posts.objects(author=user)
+    return render_template('user_detail.html', user=user, blogs=blog)
+
+
+# 关注
+@main.route('/follow/<int:user_id>')
+def follow(user_id):
+    current_user.follow(user_id)
+    return make_response('success!')
+
 # 注册
 @main.route('/register', methods=['GET', 'POST'])
 def register():
