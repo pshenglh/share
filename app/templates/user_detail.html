@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+  <div class="container">
+  <div class="panel panel-default">
+     <img class="media-object" src="{% static 'pic/userheadpic/defaultuser.png' %}" alt="">
+  <div class="panel-body">
+    <p>用户名：{{ user.username }}</p>
+    <p>电子邮箱：{{ user.email }}</p>
+    <a class="btn btn-default" href="{% url 'follow' user_detail.id %}" role="button">关注</a>
+  </div>
+  </div>
+    {% for blog in user_detail.blog_set %}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <a href="{% url 'detail' blog.id %}"><h3 class="panel-title">{{ blog.title }}</h3></a>
+        </div>
+        <div class="panel-body">
+          {{ blog.body_text }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
