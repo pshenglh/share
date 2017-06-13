@@ -1,42 +1,46 @@
 <!DOCTYPE html>
-    <head>
-        <title>潘胜的个人博客</title>
-        <link rel="icon" href="{{ url_for('static', filename='images.png') }}" type="image/x-icon">
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-        <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
-                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
-              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/customization.css')}}">
-        <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
-        {% block link %}{% endblock %}
-    </head>
+<html>
+  <head>
+    <title>潘胜的个人博客</title>
+    <link rel="icon" href="{{ url_for('static', filename='images.png') }}" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customization.css')}}">
+    <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+    {% block link %}{% endblock %}
+  </head>
 
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="{{ url_for('.index') }}">首页</a>
-                <a class="navbar-brand" href="{{ url_for('.code') }}">编程</a>
-                <a class="navbar-brand" href="{{ url_for('.database') }}">数据库</a>
-                <a class="navbar-brand" href="{{ url_for('.net') }}">网络</a>
-                <a class="navbar-brand" href="{{ url_for('.tool') }}">工具</a>
-                <a class="navbar-brand" href="{{ url_for('.essay') }}">随笔</a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('.write_post') }}"><span class="glyphicon glyphicon-plus"></span> 写博客</a></li>
-                {% endif %}
-                <li><a href="{{ url_for('.about_me') }}"><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
-                {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('.logout') }}"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
-                {% else %}
-                <li><a href="{{ url_for('.login') }}"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="{{ url_for('.index') }}">首页</a>
+        <a class="navbar-brand" href="{{ url_for('.code') }}">编程</a>
+        <a class="navbar-brand" href="{{ url_for('.database') }}">数据库</a>
+        <a class="navbar-brand" href="{{ url_for('.net') }}">网络</a>
+        <a class="navbar-brand" href="{{ url_for('.tool') }}">工具</a>
+        <a class="navbar-brand" href="{{ url_for('.essay') }}">随笔</a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        {% if current_user.is_authenticated %}
+          <li><a href="{{ url_for('main.write_post') }}"><span class="glyphicon glyphicon-plus"></span> 写博客</a></li>
+        {% endif %}
+        <li><a href="{{ url_for('main.user_detail', user_id=current_user.user_id) }}"><span
+            class="glyphicon glyphicon-user"></span> {{ current_user.username }}</a></li>
+        {% if current_user.is_authenticated %}
+          <li><a href="{{ url_for('main.logout') }}"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
+        {% else %}
+          <li><a href="{{ url_for('main.login') }}"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+          <li><a href="{{ url_for('main.login') }}"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
 <body>
     {% block body %}{% endblock %}
     <div class="foot">
@@ -44,4 +48,5 @@
         <p>Blog built by Flask</p>
     </div>
 </body>
+
 </html>
