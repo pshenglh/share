@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="container">
+
+    <div class="panel panel-default">
+       <img class="media-object" src="{{ url_for('static', filename='defaultuser.png') }}"
+            alt="{{ url_for('static', filename='defaultuser.png') }}">
+      <div class="user">
+        <p>用户名：{{ user.username }}</p>
+        <p>电子邮箱：{{ user.email }}</p>
+        <a class="btn btn-default" href="{{ url_for('main.follow', user_id=user.user_id) }}">关注</a>
+      </div>
+    </div>
+
+    {% for blog in blogs %}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <a href="{{ url_for('main.post', id=blog.post_id) }}"><h3 class="panel-title">{{ blog.title }}</h3></a>
+        </div>
+        <div class="panel-body">
+          {{ blog.abstract }}
+        </div>
+      </div>
+    {% endfor %}
+
+  </div>
+{% endblock %}

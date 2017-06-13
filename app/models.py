@@ -22,6 +22,7 @@ class Users(db.Document, UserMixin):
     def __init__(self, **kwargs):
         super(Users, self).__init__(**kwargs)
         if self.role == None:
+            print 1
             r = Role.objects(name='User').first()
             self.role = r
 
@@ -55,6 +56,15 @@ class Users(db.Document, UserMixin):
         self.confirmed = True
         self.save()
         return True
+
+    def follow(self, user_id):
+        followers_id = [r.follower.user_id for r in Relationship.objects(followed=self).all()]
+        if user_id not in followers_id:
+            follower = Users.objects(user_id=user_id).first()
+            r = Relationship(followed=self, follower=follower)
+            r.save()
+        else:
+            return 'followed'
 
 
 class Role(db.Document, RoleMixin):
@@ -101,10 +111,16 @@ class Permissions:
     ADMINISTER = 0x80
 
 
+class Relationship(db.Document):
+    followed = db.ReferenceField('Users')
+    follower = db.ReferenceField('Users')
+
+
 class Posts(db.Document):
     head_pic = db.StringField()
     body_pic = db.StringField()
     title = db.StringField()
+    author = db.ReferenceField('Users')
     body = db.StringField()
     abstract = db.StringField()
     tag = db.StringField()

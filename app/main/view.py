@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
 from flask import render_template, redirect, url_for, request, current_app, make_response
 import os
 from flask_login import login_user, login_required, logout_user, current_user
@@ -32,7 +31,7 @@ def load_user(user_id):
 # 登录
 @main.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm ()
+    form = LoginForm()
     if form.validate_on_submit():
         user = Users.objects(username=form.username.data).first()
         if user.verify_password(form.password.data):
@@ -40,6 +39,20 @@ def login():
         return redirect(request.args.get('next') or url_for('main.index'))
     return render_template('login.html', form=form)
 
+
+# 用户详细信息
+@main.route('/user/<int:user_id>')
+def user_detail(user_id):
+    user = Users.objects(user_id=user_id).first()
+    blog = Posts.objects(author=user)
+    return render_template('user_detail.html', user=user, blogs=blog)
+
+
+# 关注
+@main.route('/follow/<int:user_id>')
+def follow(user_id):
+    current_user.follow(user_id)
+    return make_response('success!')
 
 # 注册
 @main.route('/register', methods=['GET', 'POST'])
@@ -52,16 +65,26 @@ def register():
         c = ConfigId.objects(status='dev').first()
         u.user_id = c.user_id
         c.user_id += 1
+        c.save()
 
         token = u.generation_confirmaton_token()
         send_mail(u, token)
 
         try:
             u.save()
+            u.follow(u.user_id)
         except NotUniqueError:
             return make_response('not unique')
-        return redirect(url_for('main.login'))
+        return render_template('registed.html')
     return render_template('register.html', form=form)
+
+
+@main.route('/resend')
+@login_required
+def resend_mail():
+    token = current_user.generation_confirmaton_token()
+    send_mail(current_user, token)
+    return render_template('registed.html')
 
 
 def send_mail(user, token):
@@ -71,18 +94,18 @@ def send_mail(user, token):
     link = url_for('main.confirm', token=token, _external=True)
     message = MIMEText(render_template('confirm_file.txt', user=user, link=link), 'plain', 'utf-8')
     message['From'] = Header("网站管理员", 'utf-8')
-    message['To'] = Header(user.username,'utf-8')
+    message['To'] = Header(user.email, 'utf-8')
     sender = current_app.config['MAIL_SENDER']
     receivers = [user.email]
     subject = '用户邮箱确认'
     message['Subject'] = Header(subject, 'utf-8')
     try:
-        smtpObj = smtplib.SMTP_SSL(mail_host, 465)
-        smtpObj.login(mail_user, mail_pass)
-        smtpObj.sendmail(sender, receivers, message.as_string())
-        smtpObj.quit()
+        smtp_obj = smtplib.SMTP_SSL(mail_host, 465)
+        smtp_obj.login(mail_user, mail_pass)
+        smtp_obj.sendmail(sender, receivers, message.as_string())
+        smtp_obj.quit()
     except smtplib.SMTPException, e:
-        print e
+        print unicode(e)
 
 
 # 登出
@@ -91,6 +114,7 @@ def send_mail(user, token):
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
 
 @main.route('/confirm/<token>')
 def confirm(token):
@@ -103,7 +127,7 @@ def confirm(token):
     user = Users.objects(user_id=id).first()
     login_user(user)
     if current_user.confirm(token):
-        return make_response('confirm success')
+        return render_template('confirmed.html')
     else:
         return make_response('error')
 
@@ -128,7 +152,7 @@ def find_new_post():
 
 
 # 文章首页和分类
-@main.route('/', methods=['GET','POST'])
+@main.route('/', methods=['GET', 'POST'])
 def index():
     page = request.args.get('page', 1, type=int)
     post_pagination = Posts.objects(is_active=True).order_by('-timestamp').paginate(
@@ -342,7 +366,7 @@ def uploaded_file(id):
             post = Posts.objects(post_id=id).first()
             if post.head_pic:
                 q = os.path.join(current_app.config['BASE_DIR'],
-                                current_app.config['UPLOAD_FOLDER'], os.path.basename(post.head_pic))
+                                 current_app.config['UPLOAD_FOLDER'], os.path.basename(post.head_pic))
                 if os.path.exists(q):
                     os.remove(q)
             post.head_pic = p
@@ -350,7 +374,7 @@ def uploaded_file(id):
     return render_template('theme_pic.html', filenam=p, id=id)
 
 
-@main.route('/post_pic/<int:id>',methods=['GET','POST'])
+@main.route('/post_pic/<int:id>', methods=['GET', 'POST'])
 @login_required
 def post_pic(id):
     if request.method == 'POST':
