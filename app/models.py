@@ -1,8 +1,8 @@
 from datetime import datetime
-from . import db
+from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_security import UserMixin, RoleMixin
-from flask_login import current_user
+from flask_login import current_user, AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 
@@ -65,6 +65,16 @@ class Users(db.Document, UserMixin):
             r.save()
         else:
             return 'followed'
+
+
+class AnonymousUser(AnonymousUserMixin):
+    def can(self, permission):
+        return False
+
+    def is_administrator(self):
+        return False
+
+login_manager.anonymous_user = AnonymousUser
 
 
 class Role(db.Document, RoleMixin):
