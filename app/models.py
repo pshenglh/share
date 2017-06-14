@@ -166,9 +166,7 @@ class Posts(db.Document):
         json_post = {
             'url': url_for('api.get_post', id=self.post_id, _external=True),
             'body': self.body,
-            'timestamp': self.timestamp,
-            'author': url_for('api.get_user', id=self.author.user_id,
-                              _external=True)
+            'timestamp': self.timestamp
         }
         return json_post
 
