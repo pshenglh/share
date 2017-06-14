@@ -4,7 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_security import UserMixin, RoleMixin
 from flask_login import current_user, AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
+from flask import current_app, url_for
+from .exceptions import ValidationError
 
 
 class Users(db.Document, UserMixin):
@@ -81,6 +82,14 @@ class Users(db.Document, UserMixin):
         else:
             return 'followed'
 
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_user', id=self.user_id, _external=True),
+            'username': self.username,
+            'posts': url_for('api.get_user_posts', id=self.user_id, _external=True)
+        }
+        return json_user
+
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permission):
@@ -152,6 +161,23 @@ class Posts(db.Document):
     timestamp = db.DateTimeField(default=datetime.now())
     is_active = db.BooleanField(default=True)
     post_id = db.IntField()
+
+    def to_json(self):
+        json_post = {
+            'url': url_for('api.get_post', id=self.post_id, _external=True),
+            'body': self.body,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id=self.author.user_id,
+                              _external=True)
+        }
+        return json_post
+
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == '':
+            raise ValidationError
+        return Posts(body=body)
 
     def __repr__(self):
         return '<Post %r>' % self.title
